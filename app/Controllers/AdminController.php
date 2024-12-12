@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Libraries\CIAuth;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\AdminUser;
 use App\Libraries\Hash;
 use App\Models\Setting;
 use App\Models\SocialMedia;
@@ -78,7 +79,6 @@ class AdminController extends BaseController
                     ->set([
                         'name'=>$request->getVar('name'),
                         'username'=>request()->getVar('username'),
-                        'bio'=> $request->getVar('bio'),
                     ])->update();
                 
                 if($update){
@@ -367,24 +367,182 @@ class AdminController extends BaseController
         return view('backend/pages/categories' , $data);
     }
 
+    public function adminUser(){
+        $data = [
+            'pageTitle' => 'Admin User'
+        ];
+        return view('backend/pages/admin-user' , $data);
+    }
+
+    public function getAdminUser(){
+        $dbDetails = array(
+            'host'=>$this->db->hostname,
+            'user'=>$this->db->username,
+            'pass'=>$this->db->password,
+            'db'=>$this->db->database,
+        );
+        $table = "admin_user";
+        $primaryKey = "id";
+        $columns = array(
+            array(
+                "db"=>"id",
+                "dt"=>0
+            ),
+            array(
+                "db"=>"admin_id",
+                "dt"=>1,
+            ),
+            array(
+                "db"=>"username",
+                "dt"=>2,
+            ),
+            array(
+                'db'=>"email",
+                'dt'=>3,
+            ),
+            array(
+                'db'=>"created_at",
+                'dt'=>4,
+            ),
+            array(
+                'db'=>"update_at",
+                'dt'=>5,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>6,
+                'formatter'=>function($d,$row){                    
+                    return "<div class='btn-group'>
+                        <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
+                    </div>";
+                }
+            ),
+        );
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+        );
+    }
+
+    public function addAdminUser(){
+        $request = \Config\Services::request();
+        fn_log($request->getGetPost(), 'addAdminUser');die; 
+        if($request->isAJAX()){
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'admin_id'=>[
+                    'rules'=>'required|is_unique[admin_user.admin_id]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+                'username'=>[
+                    'rules'=>'required|is_unique[admin_user.username]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+                'email'=>[
+                    'rules'=>'required|is_unique[admin_user.email]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+                'password'=>[
+                    'rules'=>'required|is_unique[admin_user.password]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+            ]);
+
+            if($validation->run()=== FALSE){
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'error'=>$errors,'test'=>$request->getVar('category_name')]);
+            }else{
+                $adminUser = new AdminUser;
+                $save = $adminUser->save(['name'=> $request->getVar('category_name')]);
+
+                if($save){
+                    return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'New Category has been successfully added.']);
+                }else{
+                    return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'msg'=>'Something went wrong.']);
+                }
+            }
+        }
+
+    }
+
     public function users(){
-        var_dump('users');
         $data = [
             'pageTitle' => 'users'
         ];
-
         return view('backend/pages/users' , $data);
     }
 
     public function getUsers(){
-        $request = \Config\Services::request();
-        if($request->isAJAX()){
-            $id = $request->getVar('user_id');
-            $User = new User();
-            var_dump($User->findAll());
-            $category_date = $User->find($id);
-            return $this->response->setJSON(['data'=>$category_date]);
-        }
+        // $userTable = new User();
+        // $user = $userTable->findAll();
+        // log_message('error', json_encode($user));
+        // return $user;
+        //DB Details
+        $dbDetails = array(
+            'host'=>$this->db->hostname,
+            'user'=>$this->db->username,
+            'pass'=>$this->db->password,
+            'db'=>$this->db->database,
+        );
+        $table = "users";
+        $primaryKey = "id";
+        $columns = array(
+            array(
+                "db"=>"id",
+                "dt"=>0
+            ),
+            array(
+                "db"=>"user_id",
+                "dt"=>1,
+            ),
+            array(
+                "db"=>"username",
+                "dt"=>2,
+            ),
+            array(
+                'db'=>"email",
+                'dt'=>3,
+            ),
+            array(
+                'db'=>"bio",
+                'dt'=>4,
+            ),
+            array(
+                'db'=>"created_at",
+                'dt'=>5,
+            ),
+            array(
+                'db'=>"update_at",
+                'dt'=>6,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>7,
+                'formatter'=>function($d,$row){                    
+                    return "<div class='btn-group'>
+                        <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
+                    </div>";
+                }
+            ),
+        );
+        // log_message('error', 'Error log message1.');
+        // $query = SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns);
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+        );
+
     }
 
     public function addCategory(){
@@ -429,6 +587,7 @@ class AdminController extends BaseController
             'pass'=>$this->db->password,
             'db'=>$this->db->database,
         );
+
         $table = "categories";
         $primaryKey = "id";
         $columns = array(
@@ -465,6 +624,9 @@ class AdminController extends BaseController
                 'dt'=>4,
             ),
         );
+
+        // $query = SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns);
+        // log_message('error', json_encode($query));
         return json_encode(
             SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
         );

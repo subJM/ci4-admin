@@ -127,7 +127,7 @@
 					<span class="user-icon">
 						<img src="/backend/vendors/images/photo1.jpg" alt="" />
 					</span>
-					<span class="user-name ci-user-name"><?= get_user()->name ?></span>
+					<span class="user-name ci-user-name"><?= get_admin_user()->admin_id ?></span>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
 					<a class="dropdown-item" href="<?= route_to('admin.profile'); ?>"><i class="dw dw-user1"></i>

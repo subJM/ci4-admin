@@ -28,11 +28,11 @@
             <div class="profile-photo">
                 <a href="javascript:;" onclick="event.preventDefault();document.getElementById('user_profile_file').click();" class="edit-avatar"><i class="fa fa-pencil"></i></a>
                 <input type="file"  name="user_profile_file" id="user_profile_file" class="d-none">
-                <img src="<?= get_user()->picture ==null ? '/backend/vendors/images/photo1.jpg' : '/images/users/'.get_user()->picture ?>" alt="" class="avatar-photo">
+                <img src="<?= get_admin_user()->picture ==null ? '/backend/vendors/images/photo1.jpg' : '/images/users/'.get_admin_user()->picture ?>" alt="" class="avatar-photo">
             </div>
-            <h5 class="text-center h5 mb-0 ci-user-name"><?= get_user()->name ?></h5>
+            <h5 class="text-center h5 mb-0 ci-user-name"><?= get_admin_user()->name ?></h5>
             <p class="text-center text-muted font-14">
-                <?= get_user()->email?>
+                <?= get_admin_user()->email?>
             </p>
         </div>
     </div>
@@ -59,23 +59,23 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">name</label>
-                                                <input type="text" name="name"  class="form-control" placeholder="Enter full name" value="<?= get_user()->name ?>">
+                                                <input type="text" name="name"  class="form-control" placeholder="Enter full name" value="<?= get_admin_user()->name ?>">
                                                 <span class="text-danger error-text name_error"></span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Username</label>
-                                                <input type="text" name="username"  class="form-control" placeholder="Enter full username" value="<?= get_user()->username ?>">
+                                                <input type="text" name="username"  class="form-control" placeholder="Enter full username" value="<?= get_admin_user()->username ?>">
                                                 <span class="text-danger error-text username_error"></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="">Bio</label>
-                                        <textarea name="bio" id="" cols="30" rows="10" class="form-control" placeholder="Bio...." ><?= get_user()->bio ?></textarea>
+                                        <textarea name="bio" id="" cols="30" rows="10" class="form-control" placeholder="Bio...." ><?//= get_admin_user()->bio ?></textarea>
                                         <span class="text-danger error-text bio_error"></span>
-                                    </div>
+                                    </div> -->
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">
                                             Save change

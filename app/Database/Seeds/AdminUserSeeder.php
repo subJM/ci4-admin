@@ -4,17 +4,17 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class UserSeeder extends Seeder
+class AdminUserSeeder extends Seeder
 {
     public function run()
     {
         $data = array(
-            'user_id' => 'user',
-            'email' => 'user@email.com',
-            'username' => 'user',
+            'admin_id' => 'Admin',
+            'email' => 'admin@email.com',
+            'username' => 'Admin',
             'password' => password_hash('123456' , PASSWORD_BCRYPT),
         );
-        $this->db->table('users')->insert($data);
+        $this->db->table('admin_user')->insert($data);
 
     }
 }

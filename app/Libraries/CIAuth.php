@@ -11,6 +11,7 @@ class CIAuth
         $array = ['logged_in' => true];
         $userdata = $result;
         $session->set('userdata', $userdata);
+        fn_log($userdata, 'setCIAuth');
         $session->set($array);
     }
 

@@ -5,7 +5,7 @@ namespace App\Database\Migrations;
 use CodeIgniter\Database\Migration;
 use PHPUnit\Framework\Constraint\Constraint;
 
-class CreateUsersTable extends Migration
+class CreateAdminUserTable extends Migration
 {
     public function up()
     {
@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
                 'unsigned'      => true,
                 'auto_increment'=> true,
             ],
-            'user_id'=>[
+            'admin_id'=>[
                 'type'          => 'VARCHAR',
                 'constraint'    => '255',
             ],
@@ -27,7 +27,7 @@ class CreateUsersTable extends Migration
             'email'=>[
                 'type'          => 'VARCHAR',
                 'constraint'    => '255'
-            ], 
+            ],
             'password'=>[
                 'type'          => 'VARCHAR',
                 'constraint'    => '255'
@@ -37,21 +37,16 @@ class CreateUsersTable extends Migration
                 'constraint'    => '255',
                 'null'          => true
             ],
-            'bio'=>[
-                'type'          => 'VARCHAR',
-                'constraint'    => '255',
-                'null'          => true
-            ],
             'created_at timestamp default current_timestamp',
             'update_at timestamp default current_timestamp on update current_timestamp'
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('users',true);
+        $this->forge->createTable('admin_user',true);
     }
 
     public function down()
     {
         //
-        $this->forge->dropTable('users',true);
+        $this->forge->dropTable('admin_user',true);
     }
 }

@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Libraries\CIAuth;
 use App\Libraries\Hash;
 use App\Models\User;
+use App\Models\AdminUser;
 use App\Models\PasswordResetToken;
 use Carbon\Carbon;
 
@@ -24,9 +25,10 @@ class AuthController extends BaseController
     public function loginHandler(){
         $fieldType = filter_var($this->request->getVar('login_id'), FILTER_VALIDATE_EMAIL)  ? 'email': 'username';
         if($fieldType == 'email'){
+            log_message('error',json_encode($this->request->getVar('login_id')));
             $isValid = $this->validate([
                 'login_id' => [
-                    'rules' => 'required|valid_email|is_not_unique[users.email]',
+                    'rules' => 'required|valid_email|is_not_unique[admin_user.email]',
                     'errors' => [
                         'required' => 'Email is required',
                         'valid_email' => 'Please, check the email field. It does not appears to be valid.',
@@ -45,10 +47,10 @@ class AuthController extends BaseController
         }else{
             $isValid = $this->validate([
                 'login_id' => [
-                    'rules' => 'required|is_not_unique[users.username]',
+                    'rules' => 'required|is_not_unique[admin_user.admin_id]',
                     'errors' => [
-                        'required' => 'Username is required',
-                        'is_not_unique'=> 'Username is not exists in our system.',
+                        'required' => 'Admin ID is required',
+                        'is_not_unique'=> 'Admin ID is not exists in our system.',
                     ],
                 ],
                 'password'=>[
@@ -67,12 +69,13 @@ class AuthController extends BaseController
                 'validation'=> $this->validator,
             ]);
         }else{
-            $user = new User();
+            $user = new AdminUser();
             $userInfo = $user->where($fieldType, $this->request->getVar('login_id'))->first();
             $check_password = Hash::check($this->request->getVar('password'), $userInfo['password']);
             if(!$check_password){
                 return redirect()->route('admin.login.form')->with('fail','Wrong password')->withInput();
             }else{
+                fn_log($userInfo , 'userInfo');
                 CIAuth::setCIAuth($userInfo);
                 return redirect()->route('admin.home');
             }
@@ -92,6 +95,7 @@ class AuthController extends BaseController
                 'rules' =>'required|valid_email|is_not_unique[users.email]',
                 'errors' => [
                     'required' => 'Email is required',
+
                     'valid_email' => 'Please check email field. It does not appears to be valid',
                     'is_not_unique'=>'Email not exists in system',
                 ],
@@ -104,7 +108,7 @@ class AuthController extends BaseController
             ]);
         }else{
             //유저(어드민) 정보 가져오기
-            $user = new User();
+            $user = new AdminUser();
             $user_info = $user->asObject()->where('email', $this->request->getVar('email'))->first();
             //토큰 생성
             $token = bin2hex(openssl_random_pseudo_bytes(65));
@@ -209,7 +213,7 @@ class AuthController extends BaseController
             $get_token = $passwordResetPassword->asObject()->where('token', $token)->first();
 
             //Get user (admin) details
-            $user = new User();
+            $user = new AdminUser();
             $user_info = $user->asObject()->where('email', $get_token->email)->first();
             
             if(!$get_token){

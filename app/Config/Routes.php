@@ -12,6 +12,11 @@ $routes->group('admin', static function (RouteCollection $routes) {
   $routes->group('', ['filter'=>'cifilter:auth'], static function (RouteCollection $routes) {
     // $routes->view('example-page','example-page');
     $routes->get('home','AdminController::index' , ['as' => 'admin.home']);
+    //어드민 관리
+    $routes->get('admin-user','AdminController::adminUser' , ['as' => 'admin-user']);
+    $routes->get('get-admin-user','AdminController::getAdminUser' , ['as' => 'get-admin-user']);
+    $routes->post('add-admin-user', 'AdminController::addAdminUser', ['as' => 'add-admin-user']);
+
     $routes->get('logout','AdminController::logoutHandler', ['as'=> 'admin.logout']);
     $routes->get('profile', 'AdminController::profile', ['as' => 'admin.profile']);
     $routes->post('update-personal-details','AdminController::updatePersonalDetails', ['as'=> 'update-personal-details']);

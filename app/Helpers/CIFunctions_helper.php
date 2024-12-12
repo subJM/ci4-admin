@@ -1,9 +1,21 @@
 <?php
 
 use App\Libraries\CIAuth;
+use App\Models\AdminUser;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\SocialMedia;
+
+if(!function_exists('get_admin_user')){
+    function get_admin_user(){
+        if(CIAuth::check()){
+            $user = new AdminUser();
+            return $user->asObject()->where('id', CIAuth::id())->first();
+        }else{
+            return NULL;
+        }
+    }
+}
 
 if(!function_exists('get_user')){
     function get_user(){
@@ -65,17 +77,7 @@ if(!function_exists('get_social_media') ){
         return $result;
     }
 }
-if(!function_exists('fn_log')){
-    function fn_log($msg, $title=''){
 
-        if(!empty($title)){
-            log_message('debug' , '<====================== '.$title.' ======================>');
-        }
-        log_message('debug', $msg);
-        
-    }
-
-}
 if(!function_exists('current_route_name')){
     function current_route_name(){
         $router = \CodeIgniter\Config\Services::router();
