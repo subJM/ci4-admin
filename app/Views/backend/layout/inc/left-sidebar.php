@@ -33,11 +33,21 @@
 				</li>
 
 				<li class="dropdown posts-menu">
+					<a href="javascript:;" class="dropdown-toggle <?= current_route_name() == 'all-notice' || current_route_name() == 'new-notice' ? 'active' : '' ?>">
+						<span class="micon dw dw-newspaper"></span><span class="mtext">Notice</span>
+					</a>
+					<ul class="submenu">
+						<li><a href="<?= route_to('all-posts') ?>" class="<?= current_route_name() == 'all-notice' ? 'active' : '' ?>">All Notice</a></li>
+						<li><a href="<?= route_to('new-post') ?>" class="<?= current_route_name() == 'new-notice' ? 'active' : '' ?>" >Add new</a></li>
+					</ul>
+				</li>
+
+				<li class="dropdown posts-menu">
 					<a href="javascript:;" class="dropdown-toggle <?= current_route_name() == 'all-posts' || current_route_name() == 'new-post' ? 'active' : '' ?>">
 						<span class="micon dw dw-newspaper"></span><span class="mtext">posts</span>
 					</a>
 					<ul class="submenu">
-						<li><a href="<?= route_to('all-posts') ?>" class="<?= current_route_name() == 'all-posts' ? 'active' : '' ?>">All poists</a></li>
+						<li><a href="<?= route_to('all-posts') ?>" class="<?= current_route_name() == 'all-posts' ? 'active' : '' ?>">All Notice</a></li>
 						<li><a href="<?= route_to('new-post') ?>" class="<?= current_route_name() == 'new-post' ? 'active' : '' ?>" >Add new</a></li>
 					</ul>
 				</li>

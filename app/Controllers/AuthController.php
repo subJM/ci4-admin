@@ -23,7 +23,7 @@ class AuthController extends BaseController
     }
 
     public function loginHandler(){
-        $fieldType = filter_var($this->request->getVar('login_id'), FILTER_VALIDATE_EMAIL)  ? 'email': 'username';
+        $fieldType = filter_var($this->request->getVar('login_id'), FILTER_VALIDATE_EMAIL)  ? 'email': 'admin_id';
         if($fieldType == 'email'){
             log_message('error',json_encode($this->request->getVar('login_id')));
             $isValid = $this->validate([
@@ -69,8 +69,8 @@ class AuthController extends BaseController
                 'validation'=> $this->validator,
             ]);
         }else{
-            $user = new AdminUser();
-            $userInfo = $user->where($fieldType, $this->request->getVar('login_id'))->first();
+            $adminUser = new AdminUser();
+            $userInfo = $adminUser->where($fieldType, $this->request->getVar('login_id'))->first();
             $check_password = Hash::check($this->request->getVar('password'), $userInfo['password']);
             if(!$check_password){
                 return redirect()->route('admin.login.form')->with('fail','Wrong password')->withInput();

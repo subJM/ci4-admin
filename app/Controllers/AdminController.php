@@ -6,10 +6,12 @@ use App\Controllers\BaseController;
 use App\Libraries\CIAuth;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\Notice;
 use App\Models\AdminUser;
 use App\Libraries\Hash;
 use App\Models\Setting;
 use App\Models\SocialMedia;
+use SawaStacks\CodeIgniter\Slugify;
 
 //데이타 테이블 만들기(써드파티)
 use SSP;
@@ -425,7 +427,6 @@ class AdminController extends BaseController
 
     public function addAdminUser(){
         $request = \Config\Services::request();
-        fn_log($request->getGetPost(), 'addAdminUser');die; 
         if($request->isAJAX()){
             $validation = \Config\Services::validation();
 
@@ -438,10 +439,9 @@ class AdminController extends BaseController
                     ]
                 ],
                 'username'=>[
-                    'rules'=>'required|is_unique[admin_user.username]',
+                    'rules'=>'required',
                     'errors'=>[
                         'required' => 'Category name is required',
-                        'is_unique' => 'Category name is aleady exists'
                     ]
                 ],
                 'email'=>[
@@ -452,23 +452,26 @@ class AdminController extends BaseController
                     ]
                 ],
                 'password'=>[
-                    'rules'=>'required|is_unique[admin_user.password]',
+                    'rules'=>'required',
                     'errors'=>[
                         'required' => 'Category name is required',
-                        'is_unique' => 'Category name is aleady exists'
                     ]
                 ],
             ]);
-
             if($validation->run()=== FALSE){
                 $errors = $validation->getErrors();
                 return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'error'=>$errors,'test'=>$request->getVar('category_name')]);
             }else{
                 $adminUser = new AdminUser;
-                $save = $adminUser->save(['name'=> $request->getVar('category_name')]);
+                $save = $adminUser->save([
+                    'admin_id'=> $request->getVar('admin_id'),
+                    'username'=> $request->getVar('username'),
+                    'email'=> $request->getVar('email'),
+                    'password'=> password_hash($request->getVar('password') , PASSWORD_BCRYPT),
+                ]);
 
                 if($save){
-                    return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'New Category has been successfully added.']);
+                    return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'New Admin has been successfully added.']);
                 }else{
                     return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'msg'=>'Something went wrong.']);
                 }
@@ -530,7 +533,7 @@ class AdminController extends BaseController
             array(
                 'db'=>"id",
                 'dt'=>7,
-                'formatter'=>function($d,$row){                    
+                'formatter'=>function($d,$row){
                     return "<div class='btn-group'>
                         <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
                     </div>";
@@ -542,7 +545,6 @@ class AdminController extends BaseController
         return json_encode(
             SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
         );
-
     }
 
     public function addCategory(){
@@ -975,6 +977,7 @@ class AdminController extends BaseController
         }
     }
 
+
     public function addPost(){
         $subcategory = new SubCategory();
         $data = [
@@ -1054,7 +1057,7 @@ class AdminController extends BaseController
                         'author_id'=> $user_id,
                         'category_id'=>$request->getVar('category'),
                         'title'=> $request->getVar('title'),
-                        'slug'=>SlugService::model(Post::class)->make($request->getVar('title')),
+                        'slug'=>Slugify::model(Post::class)->make($request->getVar('title')),
                         'content'=>$request->getVar('content'),
                         'featured_image'=>$filename,
                         'tags'=>$request->getVar('tags'),
@@ -1080,6 +1083,95 @@ class AdminController extends BaseController
 
         }
     }
+
+
+    // ============= 공지사항 ===============
+
+    public function allNotice(){
+        $data = [
+            'pageTitle'=> 'All posts'
+        ];
+
+        return view('backend/pages/all-posts', $data);
+    }
+
+    public function addNotice(){
+        $subcategory = new Notice();
+        $data = [
+            'pageTitle'=>'Add new post',
+            'categories'=> $subcategory->asObject()->findAll()
+        ];
+        return view('backend/pages/new-post',$data);
+    }
+
+    public function getNotice(){
+        $dbDetails = array(
+            "host"=>$this->db->hostname,
+            "user"=>$this->db->username,
+            "pass"=>$this->db->password,
+            "db"=>$this->db->database,
+        );
+        $table= "posts";
+        $primaryKey="id";
+        $columns = array(
+            array(
+                'db'=>'id',
+                'dt'=>0,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>1,
+                "formatter" => function($d,$row){
+                    $notice= new Notice();
+                    $image = $notice->asObject()->find($row['id'])->featured_image;
+                    return "<img src='/images/posts/thumb_$image' class='img-thumbnail' style='max-width:70px;' >";
+                },
+            ),
+            array(
+                'db'=> 'title',
+                'dt'=> 2,
+            ),
+            array(
+                'db'=>'id',
+                'dt'=>3,
+                'formatter'=>function($d,$row){
+                    $post = new Post();
+                    $category_id = $post->asObject()->find($row['id'])->category_id;
+                    $subcategory = new Subcategory();
+                    $category_name = $subcategory->asObject()->find($category_id)->name;
+                    return $category_name;
+                }
+            ),
+            array(
+                'db'=>'id',
+                'dt'=>4,
+                'formatter'=>function($d,$row){
+                    $post = new Post();
+                    $visibility = $post->asObject()->find($row['id'])->visibility;
+
+                    return $visibility ==1 ? 'Public' : 'Private';
+                }
+            ),
+            array(
+                'db'=>'id',
+                'dt'=>5,
+                'formatter'=>function($d,$row){
+                    return "<div class='btn-group'>
+                        <a href='' class='btn btn-sm btn-link p-0 mx-1'>View</a>
+                        <a href='".route_to("edit-post",$row['id'])."' class='btn btn-sm btn-link p-0 mx-1'>Edit</a>
+                        <button class='btn btn-sm btn-link p-0 mx-1 deletePostBtn' data-id='".$row['id']."'>Delete</button>
+                    </div>";
+                }
+            ),
+        );
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+        );
+        
+    }
+
+
+
 
     public function allPosts(){
         $data = [
@@ -1270,7 +1362,7 @@ class AdminController extends BaseController
                             'author_id'=> $user_id,
                             'category_id'=> $request->getVar('category'),
                             'title'=> $request->getVar('title'),
-                            'slug'=> SlugService::model(Post::class)->make($request->getVar('title') ),
+                            'slug'=> Slugify::model(Post::class)->make($request->getVar('title') ),
                             'content'=> $request->getVar('content'),
                             'featured_image'=> $filename,
                             'tags'=> $request->getVar('tags'),
@@ -1294,7 +1386,7 @@ class AdminController extends BaseController
                         'author_id'=> $user_id,
                         'category_id'=> $request->getVar('category'),
                         'title'=> $request->getVar('title'),
-                        'slug'=> SlugService::model(Post::class)->make($request->getVar('title') ),
+                        'slug'=> Slugify::model(Post::class)->make($request->getVar('title') ),
                         'content'=> $request->getVar('content'),
                         'tags'=> $request->getVar('tags'),
                         'meta_keywords'=> $request->getVar('meta_keywords'),
@@ -1310,7 +1402,6 @@ class AdminController extends BaseController
 
                 }
             }
-            
         }
     }
 
@@ -1341,7 +1432,6 @@ class AdminController extends BaseController
             }else{
                 return $this->response->setJSON(['status'=>1 , 'token'=> csrf_hash() , 'msg'=>'Something went wrong']);
             }
-                
         }
     }
 

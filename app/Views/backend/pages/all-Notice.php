@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="title">
-                <h4>All posts</h4>
+                <h4><?= $pageTitle ?></h4>
             </div>
             <nav aria-label="breadcrumb" role="navigation">
                 <ol class="breadcrumb">
@@ -13,7 +13,7 @@
                         <a href="<?= route_to('admin.home')?>">Home</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        All posts
+                        <?= $pageTitle ?>
                     </li>
                 </ol>
             </nav>
@@ -21,7 +21,7 @@
         <div class="col-md-6 col-sm-12 text-right">
             <div class="dropdown">
                 <a href="<?= route_to('new-post') ?>" class="btn btn-primary">
-                    Add new post
+                    Add new Notice
                 </a>
             </div>
         </div>
@@ -33,7 +33,7 @@
         <div class="card card-box">
             <div class="card-header">
                 <div class="clearfix">
-                    <div class="pull-left">All Posts</div>
+                    <div class="pull-left"><?= $pageTitle ?></div>
                     <div class="pull-right"></div>
                 </div>
             </div>
@@ -73,7 +73,7 @@
         autoWidth:false,
         processing:true,
         serverSide:true,
-        ajax:"<?= route_to("get-posts") ?>",
+        ajax:"<?= route_to("get-notice") ?>",
         "dom":"IBfrtip",
         info:true,
         fnCreatedRow:function(row,data,index){
@@ -83,6 +83,7 @@
             { orderable:false, targets:[0,1,2,3,4,5] }
         ]
     });
+
     $(document).on('click', '.deletePostBtn', function(e){
         e.preventDefault();
         var post_id = $(this).data('id');
@@ -111,7 +112,5 @@
             }
         })
     });
-
-
 </script>
 <?= $this->endSection() ?>

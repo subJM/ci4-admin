@@ -39,8 +39,18 @@ class CreateUsersTable extends Migration
             ],
             'bio'=>[
                 'type'          => 'VARCHAR',
-                'constraint'    => '255',
+                'constraint'    => '10',
                 'null'          => true
+            ],
+            'kyc_certification'=>[
+                'type'          => 'VARCHAR',
+                'constraint'    => '10',
+                'default'          => 'NO'
+            ],
+            'block'=>[
+                'type'          => 'VARCHAR',
+                'constraint'    => '10',
+                'default'          => 'NO'
             ],
             'created_at timestamp default current_timestamp',
             'update_at timestamp default current_timestamp on update current_timestamp'

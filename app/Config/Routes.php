@@ -53,6 +53,16 @@ $routes->group('admin', static function (RouteCollection $routes) {
       $routes->post('update-post', 'AdminController::updatePost', ['as'=> 'update-post']);
       $routes->get('delete-post', 'AdminController::deletePost' , ['as' => 'delete-post']);
     });
+
+    $routes->group('notice', static function($routes){
+      $routes->get('new-notice', 'AdminController::addNotice', ['as'=>'new-notice']);
+      $routes->post('create-notice', 'AdminController::createNotice', ['as'=>'create-notice']);
+      $routes->get('all-notice', 'AdminController::allNotice', ['as'=>'all-notice']);
+      $routes->get('get-notice','AdminController::getNotice' , ['as'=>'get-notice']);
+      $routes->get('edit-notice/(:any)' , 'AdminController::editNotice/$1', ['as'=> 'edit-notice']);
+      $routes->post('update-notice', 'AdminController::updateNotice', ['as'=> 'update-notice']);
+      $routes->get('delete-notice', 'AdminController::deleteNotice' , ['as' => 'delete-notice']);
+    });
   });
   $routes->group('', ['filter' => 'cifilter:guest'], static function (RouteCollection $routes) {
     // $routes->view('example-auth','example-auth');

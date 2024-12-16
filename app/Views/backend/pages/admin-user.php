@@ -136,8 +136,8 @@
         var modal = $('body').find('div#admin-user-modal');
         var formdata = new FormData(form);
             formdata.append(csrfName, csrfHash);
-            formdata.append('user_id', $('.user_id').val());
-            formdata.append('user_name', $('.user_name').val());
+            formdata.append('admin_id', $('.user_id').val());
+            formdata.append('username', $('.user_name').val());
             formdata.append('email', $('.email').val());
             formdata.append('password', $('.password').val());
             $.ajax({
