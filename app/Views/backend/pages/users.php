@@ -31,9 +31,9 @@
                         User List
                     </div>
                     <div class="pull-right">
-                        <a href="" class="btn btn-default btn-sm p-0" role="botton" id="add_category_btn">
+                        <!-- <a href="" class="btn btn-default btn-sm p-0" role="botton" id="add_category_btn">
                             <i class="fa fa-plus-circle">Add category</i>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -46,6 +46,7 @@
                             <th scope="col">User Name</th>
                             <th scope="col">User Email</th>
                             <th scope="col">Bio</th>
+                            <th scope="col">Block</th>
                             <th scope="col">Create</th>
                             <th scope="col">Update</th>
                             <th scope="col">Actions</th>
@@ -102,10 +103,8 @@
 
 </div>
 
-<?php include('modals/category-modal-form.php')?>
-<?php include('modals/edit-category-modal-form.php')?>
-<?php include('modals/subcategory-modal-form.php')?>
-<?php include('modals/edit-subcategory-modal-form.php')?>
+<?php include('modals/user-modal-form.php')?>
+<?php include('modals/edit-user-modal-form.php')?>
 
 <?= $this->endSection() ?>
 <?= $this->section('stylesheets')?>
@@ -123,62 +122,6 @@
 <script src="/extra-assets/jquery-ui-1.13.2/jquery-ui.min.js"></script>
 
 <script>
-    // $(document).on('click', '#add_category_btn',function(e){
-    //     e.preventDefault();
-    //     var modal = $('body').find('div#category-modal');
-    //     var modal_title = 'Add Category';
-    //     var modal_btn_text = 'ADD';
-    //     modal.find('.modal-title').html(modal_title);
-    //     modal.find('modal-footer > button.action').html(modal_btn_text);
-    //     modal.find('input.error-text').html('');
-    //     modal.find('input[type="text"]').val('');
-    //     modal.modal('show');
-    // });
-
-    // $('#add_category_form').on('submit', function(e){
-    //     e.preventDefault();
-    //     var csrfName = $('.ci_csrf_data').attr('name');
-    //     var csrfHash = $('.ci_csrf_data').val();
-    //     var form = this;
-    //     var modal = $('body').find('div#category-modal');
-    //     var formdata = new FormData(form);
-    //         formdata.append(csrfName, csrfHash);
-            
-    //         $.ajax({
-    //             url:$(form).attr('action'),
-    //             method: $(form).attr('method'),
-    //             data:formdata,
-    //             processData:false,
-    //             dataType: 'json',
-    //             contentType: false,
-    //             cache:false,
-    //             beforeSend:function(){
-    //                 toastr.remove();
-    //                 $(form).find('span.error-text').text('');
-    //             },
-    //             success:function(res){
-    //                 $('.ci_csrf_data').val(res.token);
-    //                 if($.isEmptyObject(res.error)){
-    //                     if(res.status ==1){
-    //                         $(form)[0].reset();
-    //                         modal.modal('hide');
-    //                         toastr.success(res.msg);
-    //                         categories_DT.ajax.reload(null,false);
-    //                     }else{
-    //                         toastr.error(res.msg);
-    //                     }
-    //                 }else{
-    //                     $.each(res.error , function(prefix,val){
-    //                         $(form).find('span.'+prefix+'_error').text(val);
-    //                     })
-    //                 }
-
-                    
-    //             }
-
-    //         });
-    // })
-
     //Retrieve categories
     var categories_DT = $('#categories-table').DataTable({
         processing: true,
@@ -196,68 +139,68 @@
         // order:[[8,'aes']]
     });
 
-    // $(document).on('click', '.editCategoryBtn' , function(e){
-    //     e.preventDefault();
-    //     var category_id = $(this).data('id');
-    //     var url = "<?= route_to('get-user')?>";
-    //     $.get(url,{category_id:category_id }, function(res){
-    //         var modal_title = 'Edit category';
-    //         var modal_btn_text = 'Save changes';
-    //         var modal = $('body').find('div#edit-category-modal');
-    //         modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
-    //         modal.find('modal-title').html(modal_title);
-    //         modal.find('modal-footer > button.action').html(modal_btn_text);
-    //         modal.find('input[type="text"]').val(res.data.name);
-    //         modal.find('span.error-text').html('');
-    //         modal.modal('show');
-    //     },'json');
-    // });
+    $(document).on('click', '.editUserBtn' , function(e){
+        e.preventDefault();
+        var category_id = $(this).data('id');
+        var url = "<?= route_to('get-user')?>";
+        $.get(url,{category_id:category_id }, function(res){
+            var modal_title = 'Edit category';
+            var modal_btn_text = 'Save changes';
+            var modal = $('body').find('div#edit-category-modal');
+            modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
+            modal.find('modal-title').html(modal_title);
+            modal.find('modal-footer > button.action').html(modal_btn_text);
+            modal.find('input[type="text"]').val(res.data.name);
+            modal.find('span.error-text').html('');
+            modal.modal('show');
+        },'json');
+    });
 
-    // $('#update_category_form').on('submit',function(e){
-    //     e.preventDefault();
-    //     //CSRF
-    //     var csrfName = $('.ci_csrf_data').attr('name');
-    //     var csrfHash = $('.cicsrf_data').val();
-    //     var form = this;
-    //     var modal = $('body').find('div#edit-category-modal');
-    //     var formdata = new FormData(form);
-    //         form.append(csrfName,csrfHash);
+    $('#update_category_form').on('submit',function(e){
+        e.preventDefault();
+        
+        //CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.cicsrf_data').val();
+        var user_block = $('.user_block').val();
+        var form = this;
+        var modal = $('body').find('div#edit-category-modal');
+        var formdata = new FormData(form);
+        form.append(csrfName,csrfHash);
+        form.append('user_block',user_block);
+        $.ajax({
+            url:$(form).attr('action'),
+            method:$(form).attr('method'),
+            data:formdata,
+            processData: false,
+            dataType: 'json',
+            contentType:false,
+            cache: false,
+            beforeSend: function(){
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(res){
+                //Update CSRF Hash
+                $('.ci_csrf_hash').val(res.token);
 
-    //     $.ajax({
-    //         url:$(form).attr('action'),
-    //         method:$(form).attr('method'),
-    //         data:formdata,
-    //         processData: false,
-    //         dataType: 'json',
-    //         contentType:false,
-    //         cache: false,
-    //         beforeSend: function(){
-    //             toastr.remove();
-    //             $(form).find('span.error-text').text('');
-    //         },
-    //         success: function(res){
-    //             //Update CSRF Hash
-    //             $('.ci_csrf_hash').val(res.token);
+                if($.isEmptyObject(res.error)){
+                    if(res.status == 1){
+                        modal.modal('hide');
+                        toastr.success(res.msg);
+                        categories_DT.ajax.reload(null, false); //update datatable
+                    }else{
+                        toastr.error(res.msg);
+                    }
+                }else{
+                    $.each(res.error, function(prefix,val){
+                        $form.find('span.'+prefix+'_error').text(val);
+                    })
+                }
 
-    //             if($.isEmptyObject(res.error)){
-    //                 if(res.status == 1){
-    //                     modal.modal('hide');
-    //                     toastr.success(res.msg);
-    //                     categories_DT.ajax.reload(null, false); //update datatable
-    //                 }else{
-    //                     toastr.error(res.msg);
-    //                 }
-    //             }else{
-    //                 $.each(res.error, function(prefix,val){
-    //                     $form.find('span.'+prefix+'_error').text(val);
-    //                 })
-    //             }
-
-    //         }
-
-    //     });
-
-    // })
+            }
+        });
+    })
 
     // $(document).on('click', '.deleteCategoryBtn', function(e){
     //     e.preventDefault();

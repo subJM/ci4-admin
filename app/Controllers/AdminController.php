@@ -280,7 +280,8 @@ class AdminController extends BaseController
                 ])->update();
                 
                 if($update){
-                    return $this->response->setJSON(['status'=> 1, 'token'=>csrf_hash(), 'msg'=>'Done!, CI4Blog logo has been successfully update.']);
+                    return $this->response->setJSON(['status'=> 1, 'token'=>csrf_hash(), 'msg'=>'Do
+                    e!, CI4Blog logo has been successfully update.']);
                 }else{
                     return $this->response->setJSON(['status'=>0,'token'=>csrf_hash(),'msg'=>'Something went wrong on updating new logo info']);
                 }
@@ -523,16 +524,20 @@ class AdminController extends BaseController
                 'dt'=>4,
             ),
             array(
-                'db'=>"created_at",
+                'db'=>"block",
                 'dt'=>5,
             ),
             array(
-                'db'=>"update_at",
+                'db'=>"created_at",
                 'dt'=>6,
             ),
             array(
-                'db'=>"id",
+                'db'=>"update_at",
                 'dt'=>7,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>8,
                 'formatter'=>function($d,$row){
                     return "<div class='btn-group'>
                         <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
@@ -540,12 +545,23 @@ class AdminController extends BaseController
                 }
             ),
         );
-        // log_message('error', 'Error log message1.');
-        // $query = SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns);
+        log_message('error', 'Error log message1.');
+        $query = SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns);
         return json_encode(
             SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
         );
     }
+
+    public function getUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $id = $request->getVar('category_id');
+            $user = new User();
+            $user_date = $user->find($id);
+            return $this->response->setJSON(['data'=>$user_date]);
+        }
+    }
+
 
     public function addCategory(){
         $request = \Config\Services::request();
@@ -641,6 +657,48 @@ class AdminController extends BaseController
             $category = new Category();
             $category_date = $category->find($id);
             return $this->response->setJSON(['data'=>$category_date]);
+        }
+    }
+    
+    public function updateUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $id = $request->getVar('category_id');
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'category_id'=>[
+                    'rules'=> 'required',
+                    'errors'=>[
+                        'required'=>'ID is required',
+                    ]
+                ],
+                'user_block'=>[
+                    'rules'=> 'required',
+                    'errors'=>[
+                        'required'=>'Block is required',
+                    ]
+                ]
+            ]);
+
+            if($validation->run() ===false){
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'error'=> $errors]);
+            }else{
+                // return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'validated...']);
+                $user = new User();
+                $update = $user->where('id', $id)->set([
+                    'block'=>$request->getVar('user_block'),
+                ])->update();
+
+                if($update){
+                    return $this->response->setJSON(['status'=>1 , 'token'=>csrf_hash(), 'msg'=>'Category has been successfully update.']);
+                }else{
+                    return $this->response->setJSON(['status'=>0 , 'token'=>csrf_hash(), 'msg'=>'Something went wrong.']);
+                }
+
+            }
+
         }
     }
 

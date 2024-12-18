@@ -42,7 +42,7 @@ class CreateUsersTable extends Migration
                 'constraint'    => '10',
                 'null'          => true
             ],
-            'kyc_certification'=>[
+            'auth_kyc'=>[
                 'type'          => 'VARCHAR',
                 'constraint'    => '10',
                 'default'          => 'NO'

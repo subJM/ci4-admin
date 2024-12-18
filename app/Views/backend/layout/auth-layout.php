@@ -4,7 +4,7 @@
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>DeskApp - Bootstrap Admin Dashboard HTML Template</title>
+		<title>ExcelVirtuous</title>
 
 		<!-- Site favicon -->
 		<link
@@ -16,7 +16,7 @@
 			rel="icon"
 			type="image/png"
 			sizes="32x32"
-			href="/backend/vendors/images/favicon-32x32.png"
+			href="/backend/vendors/images/favicon.png"
 		/>
 		<link
 			rel="icon"
@@ -86,7 +86,8 @@
 			>
 				<div class="brand-logo">
 					<a href="<?= route_to('admin.login.form') ?>">
-						<img src="/backend/vendors/images/deskapp-logo.svg" alt="" />
+						<img src="/backend/vendors/images/logo_transparent.png" alt="" />
+						<!-- <span style="color:black"> ExcelVirtuous</span> -->
 					</a>
 				</div>
 				<div class="login-menu">

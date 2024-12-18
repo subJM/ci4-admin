@@ -16,11 +16,11 @@
 						<span class="micon dw dw-home"></span><span class="mtext">Home</span>
 					</a>
 				</li>
-				<li>
+				<!-- <li>
 					<a href="<?= route_to('categories') ?>" class="dropdown-toggle no-arrow <?= current_route_name() == 'categories' ? 'active' : '' ?>">
 						<span class="micon dw dw-list"></span><span class="mtext">Categories</span>
 					</a>
-				</li>
+				</li> -->
 				<li>
 					<a href="<?= route_to('admin-user') ?>" class="dropdown-toggle no-arrow <?= current_route_name() == 'admin-user' ? 'active' : '' ?>">
 						<span class="micon dw dw-list"></span><span class="mtext">Admin User</span>
@@ -42,7 +42,7 @@
 					</ul>
 				</li>
 
-				<li class="dropdown posts-menu">
+				<!-- <li class="dropdown posts-menu">
 					<a href="javascript:;" class="dropdown-toggle <?= current_route_name() == 'all-posts' || current_route_name() == 'new-post' ? 'active' : '' ?>">
 						<span class="micon dw dw-newspaper"></span><span class="mtext">posts</span>
 					</a>
@@ -50,7 +50,7 @@
 						<li><a href="<?= route_to('all-posts') ?>" class="<?= current_route_name() == 'all-posts' ? 'active' : '' ?>">All Notice</a></li>
 						<li><a href="<?= route_to('new-post') ?>" class="<?= current_route_name() == 'new-post' ? 'active' : '' ?>" >Add new</a></li>
 					</ul>
-				</li>
+				</li> -->
 
 				<li>
 					<div class="dropdown-divider"></div>
@@ -59,21 +59,21 @@
 					<div class="sidebar-small-cap">Settings</div>
 				</li>
 
-				<li>
+				<!-- <li>
 					<a href="<?= route_to('admin.profile') ?>" class="dropdown-toggle no-arrow <?= current_route_name() == 'admin.profile' ? 'active' : '' ?>">
 						<span class="micon dw dw-user"></span>
 						<span class="mtext">
 							Profile
-							<!-- <img src="/backend/vendors/images/coming-soon.png" alt="" width="25" -->
+							<img src="/backend/vendors/images/coming-soon.png" alt="" width="25"/>
 						</span>
 					</a>
-				</li>
+				</li> -->
 				<li>
 					<a href="<?= route_to('settings') ?>" class="dropdown-toggle no-arrow <?= current_route_name() == 'settings' ? 'active' : '' ?>">
 						<span class="micon dw dw-settings"></span>
 						<span class="mtext">
 							settings
-							<!-- <img src="/backend/vendors/images/coming-soon.png" alt="" width="25" -->
+							<img src="/backend/vendors/images/coming-soon.png" alt="" width="25"/>
 						</span>
 					</a>
 				</li>

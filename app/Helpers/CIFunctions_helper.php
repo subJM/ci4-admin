@@ -35,8 +35,8 @@ if(!function_exists('get_settings') ){
 
         if(!$settings_data){
             $data = array(
-                'blog_title'=> 'CI4Blog',
-                'blog_email'=> 'info@ci4blog.test',
+                'blog_title'=> 'ExcelVirtuous',
+                'blog_email'=> 'info@email.com',
                 'blog_phone'=> null,
                 'blog_meta_keywords'=>null,
                 'blog_meta_description'=>null,

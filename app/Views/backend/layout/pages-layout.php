@@ -5,7 +5,8 @@
 	<!-- Basic Page Info -->
 	<meta charset="utf-8" />
 	<title>
-		<?= isset($pageTitle) ? $pageTitle : 'New Page Title' ?>
+		<?= isset($pageTitle) ? "ExcelVirtuous -". $pageTitle : 'ExcelVirtuous' ?>
+		
 	</title>
 
 	<!-- Site favicon -->

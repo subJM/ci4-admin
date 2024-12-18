@@ -17,6 +17,12 @@ $routes->group('admin', static function (RouteCollection $routes) {
     $routes->get('get-admin-user','AdminController::getAdminUser' , ['as' => 'get-admin-user']);
     $routes->post('add-admin-user', 'AdminController::addAdminUser', ['as' => 'add-admin-user']);
 
+    //유저관리
+    $routes->get('users', 'AdminController::users', ['as'=> 'users']);
+    $routes->get('get-users', 'AdminController::getUsers', ['as'=> 'get-users']);
+    $routes->get('get-user', 'AdminController::getUser', ['as'=> 'get-user']);
+    $routes->post('update-user','AdminController::updateUser',['as'=>'update-user']);
+
     $routes->get('logout','AdminController::logoutHandler', ['as'=> 'admin.logout']);
     $routes->get('profile', 'AdminController::profile', ['as' => 'admin.profile']);
     $routes->post('update-personal-details','AdminController::updatePersonalDetails', ['as'=> 'update-personal-details']);
@@ -28,8 +34,7 @@ $routes->group('admin', static function (RouteCollection $routes) {
     $routes->post('update-blog-favicon','AdminController::updateBlogFavicon', ['as'=> 'update-blog-favicon']);
     $routes->post('update-social-media', 'AdminController::updateSocialMedia' , ['as'=> 'update-social-media']);
     $routes->get('categories', 'AdminController::categories', ['as'=> 'categories']);
-    $routes->get('users', 'AdminController::users', ['as'=> 'users']);
-    $routes->get('get-users', 'AdminController::getUsers', ['as'=> 'get-users']);
+
     $routes->post('add-category', 'AdminController::addCategory', ['as' => 'add-category']);
     $routes->get('get-categories', 'AdminController::getCategories', ['as'=>'get-categories']);
     $routes->get('get-category', 'AdminController::getCategory', ['as'=>'get-category']);
