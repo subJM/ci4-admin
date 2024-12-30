@@ -280,8 +280,7 @@ class AdminController extends BaseController
                 ])->update();
                 
                 if($update){
-                    return $this->response->setJSON(['status'=> 1, 'token'=>csrf_hash(), 'msg'=>'Do
-                    e!, CI4Blog logo has been successfully update.']);
+                    return $this->response->setJSON(['status'=> 1, 'token'=>csrf_hash(), 'msg'=>'Done!, Logo has been successfully update.']);
                 }else{
                     return $this->response->setJSON(['status'=>0,'token'=>csrf_hash(),'msg'=>'Something went wrong on updating new logo info']);
                 }
@@ -355,7 +354,7 @@ class AdminController extends BaseController
                 }else{
                     return $this->response->setJSON(['status'=>0 , 'token'=> csrf_hash(), 'msg'=> 'Something went wrong on updating blog social media']);
                 }
-                
+
             }
 
         }
@@ -377,7 +376,7 @@ class AdminController extends BaseController
         return view('backend/pages/admin-user' , $data);
     }
 
-    public function getAdminUser(){
+    public function getAdminUsers(){
         $dbDetails = array(
             'host'=>$this->db->hostname,
             'user'=>$this->db->username,
@@ -414,16 +413,27 @@ class AdminController extends BaseController
             array(
                 'db'=>"id",
                 'dt'=>6,
-                'formatter'=>function($d,$row){                    
+                'formatter'=>function($d,$row){
                     return "<div class='btn-group'>
-                        <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
+                        <button class='btn btn-sm btn-link p-0 mx-1 editAdminBtn' data-id='".$row['id']."'>Edit</button>
                     </div>";
                 }
             ),
         );
+        $where = "grade = 1";
         return json_encode(
-            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns, null , $where)
         );
+    }
+
+    public function getAdminUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $id = $request->getVar('category_id');
+            $user = new AdminUser();
+            $user_date = $user->find($id);
+            return $this->response->setJSON(['data'=>$user_date]);
+        }
     }
 
     public function addAdminUser(){
@@ -479,6 +489,75 @@ class AdminController extends BaseController
             }
         }
 
+    }
+
+    
+    public function changeAdminPassword(){
+        $request = \Config\Services::request();
+ 
+        if( $request->isAJAX() ){
+            $validation = \Config\Services::validation();
+            // $user_id = CIAuth::id();
+            // $user_info = $user->asObject()->where('id', $user_id)->first();
+            $user = new AdminUser();
+            $admin_srl = $request->getVar('category_id');
+            $this->validate([
+                'current_password' =>[
+                    'rules' => 'required|min_length[5]|check_admin_current_password[category_id, current_password]',
+                    'errors' => [
+                        'required' => 'Enter current password',
+                        'min_length' => 'Password must have atleast 5 charaters',
+                        'check_admin_current_password' => 'The current password is incorrect',
+                    ],
+                ],
+                'new_password'=>[
+                    'rules' => 'required|min_length[5]|max_length[20]|is_password_strong[new_password]',
+                    'errors' => [
+                        'required' => 'New password is required',
+                        'min_length' => 'New password must have atleast 5 characters',
+                        'max_length' => 'New password must not excess more than 20 characters',
+                        'is_password_strong' =>'Password must contains atleast 1 upppercase, 1 lowercase, 1 number and 1 special character',
+                    ],
+                ],
+                'confirm_new_password'=>[
+                    'rules' => 'required|matches[new_password]',
+                    'errors' => [
+                        'required' => 'Confirm new pasword',
+                        'matches'=> 'Password mismatch',
+                    ],
+                ],
+            ]);
+            if($validation->run() === FALSE){
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' =>0, 'token'=> csrf_hash(), 'error'=>$errors]);
+            }else{
+                //Update user(admin) password in DB
+                $user->where('id', $admin_srl)->set(['password' => Hash::make($request->getVar('new_password') )])->update();
+                
+                //Send Email notification to user(admin) email address
+                // 메일 발송
+                // $mail_data = array(
+                //     'user' => $user_info,
+                //     'new_password' => $request->getVar('new_password'),
+                // );
+
+                // $view = \Config\Services::renderer();
+                // $mail_body = $view->setVar('mail_data',$mail_data)->render('email-templates/password-changed-email-template');
+
+                // $mailConfig = array(
+                //     'mail_from_email' =>env('EMAIL_FROM_ADDRESS'),
+                //     'mail_from_name'    =>env('EMAIL_FROM_NAME'),
+                //     'mail_recipient_email'  => $user_info->email,
+                //     'mail_recipient_name'   => $user_info->name,
+                //     'mail_subject'          => 'Password Changed',
+                //     'mail_body'             => $mail_body,
+                // );
+
+                // sendEmail($mailConfig);
+
+                return $this->response->setJSON(['status'=>1 ,'token'=>csrf_hash(),'msg'=>'Done! Your password has been successfully updated']);
+            }
+        }
     }
 
     public function users(){
@@ -540,13 +619,14 @@ class AdminController extends BaseController
                 'dt'=>8,
                 'formatter'=>function($d,$row){
                     return "<div class='btn-group'>
-                        <button class='btn btn-sm btn-link p-0 mx-1 editUserBtn' data-id='".$row['id']."'>Edit</button>
+                        <button class='btn btn-sm btn-danger editUserBtn' data-id='".$row['id']."'>제한</button>
+                    </div>
+                    <div class='btn-group'>
+                        <button class='btn btn-sm btn-info  editUserPasswordBtn' data-id='".$row['id']."' data-email='".trim($row['email'])."'>비밀번호</button>
                     </div>";
                 }
             ),
         );
-        log_message('error', 'Error log message1.');
-        $query = SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns);
         return json_encode(
             SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
         );
@@ -989,7 +1069,6 @@ class AdminController extends BaseController
         if($request->isAJAX()){
             $positions = $request->getVar('positions');
             $subcategory = new SubCategory();
-            fn_log($positions, 'position');
             foreach( $positions as $position){
                 $index = $position[0];
                 $newPosition = $position[1];
@@ -1147,19 +1226,18 @@ class AdminController extends BaseController
 
     public function allNotice(){
         $data = [
-            'pageTitle'=> 'All posts'
+            'pageTitle'=> 'All Notice'
         ];
 
-        return view('backend/pages/all-posts', $data);
+        return view('backend/pages/all-notice', $data);
     }
 
     public function addNotice(){
-        $subcategory = new Notice();
         $data = [
             'pageTitle'=>'Add new post',
-            'categories'=> $subcategory->asObject()->findAll()
+            'categories'=> []
         ];
-        return view('backend/pages/new-post',$data);
+        return view('backend/pages/new-notice',$data);
     }
 
     public function getNotice(){
@@ -1169,7 +1247,7 @@ class AdminController extends BaseController
             "pass"=>$this->db->password,
             "db"=>$this->db->database,
         );
-        $table= "posts";
+        $table= "notice";
         $primaryKey="id";
         $columns = array(
             array(
@@ -1177,34 +1255,34 @@ class AdminController extends BaseController
                 'dt'=>0,
             ),
             array(
-                'db'=>"id",
-                'dt'=>1,
-                "formatter" => function($d,$row){
-                    $notice= new Notice();
-                    $image = $notice->asObject()->find($row['id'])->featured_image;
-                    return "<img src='/images/posts/thumb_$image' class='img-thumbnail' style='max-width:70px;' >";
-                },
+                'db'=> 'user_id',
+                'dt'=> 1,
             ),
             array(
                 'db'=> 'title',
                 'dt'=> 2,
             ),
             array(
-                'db'=>'id',
+                'db'=>'content',
                 'dt'=>3,
-                'formatter'=>function($d,$row){
-                    $post = new Post();
-                    $category_id = $post->asObject()->find($row['id'])->category_id;
-                    $subcategory = new Subcategory();
-                    $category_name = $subcategory->asObject()->find($category_id)->name;
-                    return $category_name;
-                }
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>4,
+                "formatter" => function($d,$row){
+                    $notice= new Notice();
+                    $image = $notice->asObject()->find($row['id'])->featured_image;
+                    if(empty($image)){
+                        $image = 'linkedin_banner_image_1';
+                    }
+                    return "<img src='/images/posts/thumb_$image' class='img-thumbnail' style='max-width:70px;' >";
+                },
             ),
             array(
                 'db'=>'id',
-                'dt'=>4,
+                'dt'=>5,
                 'formatter'=>function($d,$row){
-                    $post = new Post();
+                    $post = new Notice();
                     $visibility = $post->asObject()->find($row['id'])->visibility;
 
                     return $visibility ==1 ? 'Public' : 'Private';
@@ -1212,7 +1290,7 @@ class AdminController extends BaseController
             ),
             array(
                 'db'=>'id',
-                'dt'=>5,
+                'dt'=>6,
                 'formatter'=>function($d,$row){
                     return "<div class='btn-group'>
                         <a href='' class='btn btn-sm btn-link p-0 mx-1'>View</a>
@@ -1223,7 +1301,8 @@ class AdminController extends BaseController
             ),
         );
         return json_encode(
-            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns),
+            JSON_UNESCAPED_UNICODE
         );
         
     }
@@ -1306,11 +1385,10 @@ class AdminController extends BaseController
     }
 
     public function editPost($id){
-        $subCategory = new SubCategory();
-        $post = new Post();
+        $post = new Notice();
         $data = [
             'pageTitle'=>'Edit post',
-            'categories'=> $subCategory->asObject()->findAll(),
+            'categories'=> $post->asObject()->findAll(),
             'post'=> $post->asObject()->find($id),
             
         ];
@@ -1492,5 +1570,6 @@ class AdminController extends BaseController
             }
         }
     }
+
 
 }

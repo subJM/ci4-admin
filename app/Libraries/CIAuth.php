@@ -19,7 +19,11 @@ class CIAuth
         $session = session();
         if ($session->has('logged_in')) {
             if ($session->has('userdata')) {
-                return $session->get('userdata')['id'];
+                if(is_object($session->get('userdata')) == true ) {
+                    return $session->get('userdata')->id;
+                }else{
+                    return $session->get('userdata')['id'];
+                }
             } else {
                 return null;
             }

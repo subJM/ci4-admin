@@ -1,4 +1,5 @@
-<p>Dear <?=$mail_data['user']->name?></p>
+<?php fn_log($mail_data['user'] , 'mail_data')?>
+<p>Dear <?=$mail_data['user']->username?></p>
 <p>
     We are received a request to reset password for CI4Blog account associated with <i><?=$mail_data['user']->email?></i>.
     You can reset your password by clicking the button below:

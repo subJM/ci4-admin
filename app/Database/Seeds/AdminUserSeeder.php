@@ -12,6 +12,7 @@ class AdminUserSeeder extends Seeder
             'admin_id' => 'Admin',
             'email' => 'admin@email.com',
             'username' => 'Admin',
+            'grade' => '0',
             'password' => password_hash('123456' , PASSWORD_BCRYPT),
         );
         $this->db->table('admin_user')->insert($data);

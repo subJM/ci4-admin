@@ -32,7 +32,6 @@ if(!function_exists('get_settings') ){
     function get_settings(){
         $settings = new Setting();
         $settings_data = $settings->asObject()->first();
-
         if(!$settings_data){
             $data = array(
                 'blog_title'=> 'ExcelVirtuous',
@@ -40,7 +39,7 @@ if(!function_exists('get_settings') ){
                 'blog_phone'=> null,
                 'blog_meta_keywords'=>null,
                 'blog_meta_description'=>null,
-                'blog_logo'=>null,
+                'blog_logo'=>'logo_excel',
                 'blog_favicon'=>null,
             );
             $settings->save($data);

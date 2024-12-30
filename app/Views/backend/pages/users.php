@@ -68,43 +68,13 @@
             </div>
         </div>
     </div>
-    <!-- <div class="col-md-12 mb-4">
-        <div class="card card-box">
-            <div class="card-header">
-                <div class="clearfix">
-                    <div class="pull-left">
-                        Sub categories
-                    </div>
-                    <div class="pull-right">
-                        <a href="" class="btn btn-default btn-sm p-0" role="botton" id="add_subcategory_btn">
-                            <i class="fa fa-plus-circle">Add sub category</i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <table class="table table-sm table-borderless table-hover table-striped" id="sub-categories-table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Sub categories name</th>
-                            <th scope="col">Parent category</th>
-                            <th scope="col">N. of post(s)</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-  
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div> -->
+
 
 </div>
 
 <?php include('modals/user-modal-form.php')?>
 <?php include('modals/edit-user-modal-form.php')?>
+<?php include('modals/edit-user-password-modal-form.php')?>
 
 <?= $this->endSection() ?>
 <?= $this->section('stylesheets')?>
@@ -138,7 +108,7 @@
         // ],
         // order:[[8,'aes']]
     });
-
+    //입출금 제한
     $(document).on('click', '.editUserBtn' , function(e){
         e.preventDefault();
         var category_id = $(this).data('id');
@@ -155,6 +125,72 @@
             modal.modal('show');
         },'json');
     });
+
+    //비밀번호 변경
+    $(document).on('click', '.editUserPasswordBtn' , function(e){
+        e.preventDefault();
+        var category_id = $(this).data('id');
+        var email = $(this).data('email');
+        console.log(email);
+        var url = "<?= route_to('get-user')?>";
+        console.log(url);
+        $.get(url,{category_id:category_id ,email:email }, function(res){
+            var modal_title = 'Password Change';
+            var modal_btn_text = 'Save changes';
+            var modal = $('body').find('div#edit-user-password-modal');
+            modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
+            modal.find('modal-title').html(modal_title);
+            modal.find('modal-footer > button.action').html(modal_btn_text);
+            modal.find('input[type="text"]').val(email);
+            modal.find('span.error-text').html('');
+            modal.modal('show');
+        },'json');
+    });
+
+    $('#change_user_password_form').on('submit', function(e) {
+        e.preventDefault();
+  //CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+
+        var form = this;
+        var modal = $('body').find('div#edit-user-password-modal');
+        var formdata = new FormData(form);
+        form.append(csrfName,csrfHash);
+        $.ajax({
+            url:$(form).attr('action'),
+            method:$(form).attr('method'),
+            data:formdata,
+            processData: false,
+            dataType: 'json',
+            contentType:false,
+            cache: false,
+            beforeSend: function(){
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(res){
+                //Update CSRF Hash
+                $('.ci_csrf_hash').val(res.token);
+
+                if($.isEmptyObject(res.error)){
+                    if(res.status == 1){
+                        modal.modal('hide');
+                        toastr.success(res.msg);
+                        categories_DT.ajax.reload(null, false); //update datatable
+                    }else{
+                        toastr.error(res.msg);
+                    }
+                }else{
+                    $.each(res.error, function(prefix,val){
+                        $form.find('span.'+prefix+'_error').text(val);
+                    })
+                }
+
+            }
+        });
+
+    })
 
     $('#update_category_form').on('submit',function(e){
         e.preventDefault();

@@ -33,7 +33,7 @@
         <div class="card card-box">
             <div class="card-header">
                 <div class="clearfix">
-                    <div class="pull-left"><?= $pageTitle ?></div>
+                    <div class="pull-left"><?= $pageTitle ?>1</div>
                     <div class="pull-right"></div>
                 </div>
             </div>
@@ -42,9 +42,10 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Featured image</th>
+                            <th scope="col">User ID</th>
                             <th scope="col">Title</th>
-                            <th scope="col">Categoty</th>
+                            <th scope="col">Content</th>
+                            <th scope="col">Featured image</th>
                             <th scope="col">Visibility</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -80,7 +81,7 @@
             $('td',row).eq(0).html(index+1);
         },
         columDefs:[
-            { orderable:false, targets:[0,1,2,3,4,5] }
+            { orderable:false, targets:[0,1,2,3,4,5,6] }
         ]
     });
 

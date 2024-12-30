@@ -32,6 +32,11 @@ class CreateAdminUserTable extends Migration
                 'type'          => 'VARCHAR',
                 'constraint'    => '255'
             ],
+            'grade'=>[
+                'type'          => 'INT',
+                'constraint'    => '10',
+                'default'       => '1'
+            ],
             'picture'=>[
                 'type'          => 'VARCHAR',
                 'constraint'    => '255',

@@ -37,8 +37,8 @@
 						<span class="micon dw dw-newspaper"></span><span class="mtext">Notice</span>
 					</a>
 					<ul class="submenu">
-						<li><a href="<?= route_to('all-posts') ?>" class="<?= current_route_name() == 'all-notice' ? 'active' : '' ?>">All Notice</a></li>
-						<li><a href="<?= route_to('new-post') ?>" class="<?= current_route_name() == 'new-notice' ? 'active' : '' ?>" >Add new</a></li>
+						<li><a href="<?= route_to('all-notice') ?>" class="<?= current_route_name() == 'all-notice' ? 'active' : '' ?>">All Notice</a></li>
+						<li><a href="<?= route_to('new-notice') ?>" class="<?= current_route_name() == 'new-notice' ? 'active' : '' ?>" >Add new</a></li>
 					</ul>
 				</li>
 

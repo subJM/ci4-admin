@@ -10,7 +10,6 @@ if(!function_exists('sendEmail')){
         require 'PHPMailer/src/Exception.php';
         require 'PHPMailer/src/PHPMailer.php';
         require 'PHPMailer/src/SMTP.php';
-
         $mail = new PHPMailer(true);
         $mail->SMTPDebug = 0;
         $mail->isSMTP();
@@ -20,14 +19,18 @@ if(!function_exists('sendEmail')){
         $mail->Password = env('EMAIL_PASSWORD');
         $mail->SMTPSecure = env('EMAIL_ENCRYPTION');
         $mail->Port = env('EMAIL_PORT');
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'quoted-printable';
         $mail->setFrom($mailConfig['mail_from_email'], $mailConfig['mail_from_name']);
         $mail->addAddress($mailConfig['mail_recipient_email'], $mailConfig['mail_recipient_name']) ;
         $mail->isHTML(true);
         $mail->Subject = $mailConfig['mail_subject'];
         $mail->Body = $mailConfig['mail_body'];
         if($mail->send()){
+            fn_log('투르');
             return true;
         }else{
+            fn_log('펄스');
             return false;
         }
     }

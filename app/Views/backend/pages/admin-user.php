@@ -179,7 +179,7 @@
     var categories_DT = $('#categories-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "<?= route_to('get-admin-user') ?>",
+        ajax: "<?= route_to('get-admin-users') ?>",
         dom: "Brtip",
         info: true,
         fnCreatedRow: function(row,data,index){
@@ -189,71 +189,77 @@
         //     { orderable:false, targets:[0,1,2,3,4,5,6,7]},
         //     { visible:false, targets:8}
         // ],
-        // order:[[8,'aes']]
+        order:[[0,'asc']]
     });
 
-    // $(document).on('click', '.editCategoryBtn' , function(e){
-    //     e.preventDefault();
-    //     var category_id = $(this).data('id');
-    //     var url = "<?= route_to('get-user')?>";
-    //     $.get(url,{category_id:category_id }, function(res){
-    //         var modal_title = 'Edit category';
-    //         var modal_btn_text = 'Save changes';
-    //         var modal = $('body').find('div#edit-category-modal');
-    //         modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
-    //         modal.find('modal-title').html(modal_title);
-    //         modal.find('modal-footer > button.action').html(modal_btn_text);
-    //         modal.find('input[type="text"]').val(res.data.name);
-    //         modal.find('span.error-text').html('');
-    //         modal.modal('show');
-    //     },'json');
-    // });
+    $(document).on('click', '.editAdminBtn' , function(e){
+        e.preventDefault();
+        var category_id = $(this).data('id');
+        var url = "<?= route_to('get-admin-user')?>";
+        $.get(url,{category_id:category_id }, function(res){
+            console.log(res);
+            var modal_title = `Edit Admin( ${res.data.admin_id} )`;
+            var modal_btn_text = 'Save changes';
+            var modal = $('body').find('div#edit-admin-user-modal');
+            modal.find('form').find('input[type="hidden"][name="category_id"]').val(category_id);
+            modal.find('.modal-title').html(modal_title);
+            modal.find('.modal-footer > button.action').html(modal_btn_text);
+            // modal.find('input[type="text"]').val(res.data.name);
+            modal.find('span.error-text').html('');
+            modal.modal('show');
+        },'json');
+    });
 
-    // $('#update_category_form').on('submit',function(e){
-    //     e.preventDefault();
-    //     //CSRF
-    //     var csrfName = $('.ci_csrf_data').attr('name');
-    //     var csrfHash = $('.cicsrf_data').val();
-    //     var form = this;
-    //     var modal = $('body').find('div#edit-category-modal');
-    //     var formdata = new FormData(form);
-    //         form.append(csrfName,csrfHash);
+    $('#update_admin_user_form').on('submit',function(e){
+        e.preventDefault();
+        //CSRF
+        var csrfName = $('.ci_csrf_data').attr('name');
+        var csrfHash = $('.ci_csrf_data').val();
+        var form = this;
+        var modal = $('body').find('div#edit-admin-user-modal');
+        var formdata = new FormData(form);
+            form.append(csrfName,csrfHash);
 
-    //     $.ajax({
-    //         url:$(form).attr('action'),
-    //         method:$(form).attr('method'),
-    //         data:formdata,
-    //         processData: false,
-    //         dataType: 'json',
-    //         contentType:false,
-    //         cache: false,
-    //         beforeSend: function(){
-    //             toastr.remove();
-    //             $(form).find('span.error-text').text('');
-    //         },
-    //         success: function(res){
-    //             //Update CSRF Hash
-    //             $('.ci_csrf_hash').val(res.token);
+        $.ajax({
+            url:$(form).attr('action'),
+            method:$(form).attr('method'),
+            data:formdata,
+            processData: false,
+            dataType: 'json',
+            contentType:false,
+            cache: false,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }, // AJAX 요청임을 명시
+            beforeSend: function(){
+                toastr.remove();
+                $(form).find('span.error-text').text('');
+            },
+            success: function(res){
+                //Update CSRF Hash
+                $('.ci_csrf_hash').val(res.token);
+                if($.isEmptyObject(res.error)){
+                    if(res.status == 1){
+                        modal.modal('hide');
+                        toastr.success(res.msg);
+                        categories_DT.ajax.reload(null, false); //update datatable
+                    }else{
+                        toastr.error(res.msg);
+                    }
+                }else{
+                    $.each(res.error, function(prefix,val){
+                        $(form).find('span.'+prefix+'_error').text(val);
+                    })
+                }
 
-    //             if($.isEmptyObject(res.error)){
-    //                 if(res.status == 1){
-    //                     modal.modal('hide');
-    //                     toastr.success(res.msg);
-    //                     categories_DT.ajax.reload(null, false); //update datatable
-    //                 }else{
-    //                     toastr.error(res.msg);
-    //                 }
-    //             }else{
-    //                 $.each(res.error, function(prefix,val){
-    //                     $form.find('span.'+prefix+'_error').text(val);
-    //                 })
-    //             }
+            },
+            error : function(xhr, textStatus, thrownError) {
+                toastr.error('서버 장애로 고객센터에 문의해 주세요');
+            },
 
-    //         }
+        });
 
-    //     });
-
-    // })
+    })
 
     // $(document).on('click', '.deleteCategoryBtn', function(e){
     //     e.preventDefault();

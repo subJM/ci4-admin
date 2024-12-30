@@ -8,20 +8,24 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'AuthController::loginform');
 
 $routes->group('admin', static function (RouteCollection $routes) {
-
   $routes->group('', ['filter'=>'cifilter:auth'], static function (RouteCollection $routes) {
     // $routes->view('example-page','example-page');
     $routes->get('home','AdminController::index' , ['as' => 'admin.home']);
     //어드민 관리
     $routes->get('admin-user','AdminController::adminUser' , ['as' => 'admin-user']);
-    $routes->get('get-admin-user','AdminController::getAdminUser' , ['as' => 'get-admin-user']);
+    $routes->get('get-admin-users','AdminController::getAdminUsers' , ['as' => 'get-admin-users']);
+    $routes->get('get-admin-user', 'AdminController::getAdminUser', ['as'=> 'get-admin-user']);
     $routes->post('add-admin-user', 'AdminController::addAdminUser', ['as' => 'add-admin-user']);
+    $routes->post('change-admin-password', 'AdminController::changeAdminPassword' ,  ['as'=> 'change-admin-password']);
 
     //유저관리
     $routes->get('users', 'AdminController::users', ['as'=> 'users']);
     $routes->get('get-users', 'AdminController::getUsers', ['as'=> 'get-users']);
     $routes->get('get-user', 'AdminController::getUser', ['as'=> 'get-user']);
     $routes->post('update-user','AdminController::updateUser',['as'=>'update-user']);
+    $routes->post('auth-email','AuthController::authEmail',['as'=>'auth-email']);
+    $routes->post('send-password-reset-link' , 'AuthController::sendPasswordResetLink', ['as'=> 'send-password-reset-link']);
+    $routes->get('password/reset/(:any)','AuthController::resetPassword/$1', ['as'=> 'admin.reset-password']);
 
     $routes->get('logout','AdminController::logoutHandler', ['as'=> 'admin.logout']);
     $routes->get('profile', 'AdminController::profile', ['as' => 'admin.profile']);
@@ -75,8 +79,11 @@ $routes->group('admin', static function (RouteCollection $routes) {
     $routes->get('login','AuthController::loginform' , ['as' => 'admin.login.form']);
     $routes->post('login', 'AuthController::loginHandler', ['as'=> 'admin.login.handler']);
     $routes->get('forgot-password','AuthController::forgotForm', ['as'=> 'admin.forgot.form']);
-    $routes->post('send-password-reset-link' , 'AuthController::sendPasswordResetLink', ['as'=> 'send_password_reset_link']);
+    $routes->post('send-password-reset-link' , 'AuthController::sendPasswordResetLink', ['as'=> 'send-password-reset-link']);
     $routes->get('password/reset/(:any)','AuthController::resetPassword/$1', ['as'=> 'admin.reset-password']);
     $routes->post('reset-password-handler/(:any)','AuthController::resetPasswordHandler/$1', ['as'=> 'reset-password-handler']);
   });
+  $routes->post('super-admin','AuthController::superAdmin' , ['as' => 'super-admin']);
+  $routes->post('superAdmin-ChangePW','AuthController::superAdminChangePW' , ['as' => 'superAdmin-ChangePW']);
+  // $routes->get('superAdmin-ChangePW','AuthController::superAdminChangePW' , ['as' => 'superAdmin-ChangePW']);
 });
