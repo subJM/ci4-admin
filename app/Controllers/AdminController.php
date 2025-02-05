@@ -20,13 +20,30 @@ use \Mberecall\CI_Slugify\SlugService;
 use App\Models\SubCategory;
 use App\Models\Post;
 
+/****
+ * 1. 로그아웃
+ * 2. 프로필
+ * 2-1. 업데이트 프로필
+ * 2-2. 프로필 사진 업데이트
+ * 3. 패스워드 변경
+ * 4. 세팅 페이지
+ * 4-1. 세팅 변경
+ * 4-2. 로고 업데이트
+ * 4-3. 소셜 미디어 업데이트
+ * 5. 카테고리(안씀)
+ * 6. 어드민 페이지
+ * 6-1. 어드민 테이블 가져오기
+ * 6-2. 어드민 정보 가져오기
+ * 6-3. 어드민 추가
+ * 6-4. 어드민 패스워드 변경
+****/
 class AdminController extends BaseController
 {
     protected $helpers =['url', 'form' , 'CIMail', 'CIFunctions'];
     protected $db;
 
     public function __construct(){
-        require_once APPPATH.'ThirdParty/ssp.php';
+        require_once APPPATH.'ThirdParty/SSP.php';
         $this->db = db_connect();
     }
 
@@ -37,12 +54,14 @@ class AdminController extends BaseController
         ];
         return view('backend/pages/home', $data);
     }
-
+    
+    // 1. 로그아웃
     public function logoutHandler(){
         CIAuth::forget();
         return redirect()->route('admin.login.form')->with('fail','You are logged out!');
     }
 
+    // 2. 프로필
     public function profile(){
         $data = [
             'pageTitle' => 'Profile',
@@ -50,6 +69,7 @@ class AdminController extends BaseController
         return view('backend/pages/profile', $data);
     }
 
+    // 2-1. 업데이트 프로필
     public function updatePersonalDetails(){
         $request = \Config\Services::request();
         $validation = \Config\Services::validation();
@@ -94,6 +114,7 @@ class AdminController extends BaseController
         }
     }
 
+    # 2-2. 프로필 사진 업데이트
     public function updateProfilePicture(){
         $request = \Config\Services::request();
         $user_id = CIAuth::id();
@@ -139,6 +160,7 @@ class AdminController extends BaseController
 
     }
 
+    // 3.패스워드 변경
     public function changePassword(){
         $request = \Config\Services::request();
         
@@ -208,6 +230,7 @@ class AdminController extends BaseController
 
     }
 
+    // 4. 세팅 페이지
     public function settings(){
         $data =[
             'pageTitle'=>'Setting'
@@ -215,6 +238,7 @@ class AdminController extends BaseController
         return view('backend/pages/settings', $data);
     }
 
+    // 4-1. 세팅 변경
     public function updateGeneralSettings(){
         $request = \Config\Services::request();
         if($request->isAJAX()){
@@ -259,7 +283,7 @@ class AdminController extends BaseController
             }
         }
     }
-
+    // 4-2. 로고 업데이트
     public function updateBlogLogo(){
         $request = \Config\Services::request();
         
@@ -290,6 +314,7 @@ class AdminController extends BaseController
         }
     }
 
+    // 4-3. 소셜 미디어 업데이트
     public function updateSocialMedia(){
         $request = \Config\Services::request();
 
@@ -361,6 +386,7 @@ class AdminController extends BaseController
 
     }
 
+    # 5. 카테고리(안씀)
     public function categories(){
         $data = [
             'pageTitle' => 'Categories'
@@ -368,280 +394,6 @@ class AdminController extends BaseController
 
         return view('backend/pages/categories' , $data);
     }
-
-    public function adminUser(){
-        $data = [
-            'pageTitle' => 'Admin User'
-        ];
-        return view('backend/pages/admin-user' , $data);
-    }
-
-    public function getAdminUsers(){
-        $dbDetails = array(
-            'host'=>$this->db->hostname,
-            'user'=>$this->db->username,
-            'pass'=>$this->db->password,
-            'db'=>$this->db->database,
-        );
-        $table = "admin_user";
-        $primaryKey = "id";
-        $columns = array(
-            array(
-                "db"=>"id",
-                "dt"=>0
-            ),
-            array(
-                "db"=>"admin_id",
-                "dt"=>1,
-            ),
-            array(
-                "db"=>"username",
-                "dt"=>2,
-            ),
-            array(
-                'db'=>"email",
-                'dt'=>3,
-            ),
-            array(
-                'db'=>"created_at",
-                'dt'=>4,
-            ),
-            array(
-                'db'=>"update_at",
-                'dt'=>5,
-            ),
-            array(
-                'db'=>"id",
-                'dt'=>6,
-                'formatter'=>function($d,$row){
-                    return "<div class='btn-group'>
-                        <button class='btn btn-sm btn-link p-0 mx-1 editAdminBtn' data-id='".$row['id']."'>Edit</button>
-                    </div>";
-                }
-            ),
-        );
-        $where = "grade = 1";
-        return json_encode(
-            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns, null , $where)
-        );
-    }
-
-    public function getAdminUser(){
-        $request = \Config\Services::request();
-        if($request->isAJAX()){
-            $id = $request->getVar('category_id');
-            $user = new AdminUser();
-            $user_date = $user->find($id);
-            return $this->response->setJSON(['data'=>$user_date]);
-        }
-    }
-
-    public function addAdminUser(){
-        $request = \Config\Services::request();
-        if($request->isAJAX()){
-            $validation = \Config\Services::validation();
-
-            $this->validate([
-                'admin_id'=>[
-                    'rules'=>'required|is_unique[admin_user.admin_id]',
-                    'errors'=>[
-                        'required' => 'Category name is required',
-                        'is_unique' => 'Category name is aleady exists'
-                    ]
-                ],
-                'username'=>[
-                    'rules'=>'required',
-                    'errors'=>[
-                        'required' => 'Category name is required',
-                    ]
-                ],
-                'email'=>[
-                    'rules'=>'required|is_unique[admin_user.email]',
-                    'errors'=>[
-                        'required' => 'Category name is required',
-                        'is_unique' => 'Category name is aleady exists'
-                    ]
-                ],
-                'password'=>[
-                    'rules'=>'required',
-                    'errors'=>[
-                        'required' => 'Category name is required',
-                    ]
-                ],
-            ]);
-            if($validation->run()=== FALSE){
-                $errors = $validation->getErrors();
-                return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'error'=>$errors,'test'=>$request->getVar('category_name')]);
-            }else{
-                $adminUser = new AdminUser;
-                $save = $adminUser->save([
-                    'admin_id'=> $request->getVar('admin_id'),
-                    'username'=> $request->getVar('username'),
-                    'email'=> $request->getVar('email'),
-                    'password'=> password_hash($request->getVar('password') , PASSWORD_BCRYPT),
-                ]);
-
-                if($save){
-                    return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'New Admin has been successfully added.']);
-                }else{
-                    return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'msg'=>'Something went wrong.']);
-                }
-            }
-        }
-
-    }
-
-    
-    public function changeAdminPassword(){
-        $request = \Config\Services::request();
- 
-        if( $request->isAJAX() ){
-            $validation = \Config\Services::validation();
-            // $user_id = CIAuth::id();
-            // $user_info = $user->asObject()->where('id', $user_id)->first();
-            $user = new AdminUser();
-            $admin_srl = $request->getVar('category_id');
-            $this->validate([
-                'current_password' =>[
-                    'rules' => 'required|min_length[5]|check_admin_current_password[category_id, current_password]',
-                    'errors' => [
-                        'required' => 'Enter current password',
-                        'min_length' => 'Password must have atleast 5 charaters',
-                        'check_admin_current_password' => 'The current password is incorrect',
-                    ],
-                ],
-                'new_password'=>[
-                    'rules' => 'required|min_length[5]|max_length[20]|is_password_strong[new_password]',
-                    'errors' => [
-                        'required' => 'New password is required',
-                        'min_length' => 'New password must have atleast 5 characters',
-                        'max_length' => 'New password must not excess more than 20 characters',
-                        'is_password_strong' =>'Password must contains atleast 1 upppercase, 1 lowercase, 1 number and 1 special character',
-                    ],
-                ],
-                'confirm_new_password'=>[
-                    'rules' => 'required|matches[new_password]',
-                    'errors' => [
-                        'required' => 'Confirm new pasword',
-                        'matches'=> 'Password mismatch',
-                    ],
-                ],
-            ]);
-            if($validation->run() === FALSE){
-                $errors = $validation->getErrors();
-                return $this->response->setJSON(['status' =>0, 'token'=> csrf_hash(), 'error'=>$errors]);
-            }else{
-                //Update user(admin) password in DB
-                $user->where('id', $admin_srl)->set(['password' => Hash::make($request->getVar('new_password') )])->update();
-                
-                //Send Email notification to user(admin) email address
-                // 메일 발송
-                // $mail_data = array(
-                //     'user' => $user_info,
-                //     'new_password' => $request->getVar('new_password'),
-                // );
-
-                // $view = \Config\Services::renderer();
-                // $mail_body = $view->setVar('mail_data',$mail_data)->render('email-templates/password-changed-email-template');
-
-                // $mailConfig = array(
-                //     'mail_from_email' =>env('EMAIL_FROM_ADDRESS'),
-                //     'mail_from_name'    =>env('EMAIL_FROM_NAME'),
-                //     'mail_recipient_email'  => $user_info->email,
-                //     'mail_recipient_name'   => $user_info->name,
-                //     'mail_subject'          => 'Password Changed',
-                //     'mail_body'             => $mail_body,
-                // );
-
-                // sendEmail($mailConfig);
-
-                return $this->response->setJSON(['status'=>1 ,'token'=>csrf_hash(),'msg'=>'Done! Your password has been successfully updated']);
-            }
-        }
-    }
-
-    public function users(){
-        $data = [
-            'pageTitle' => 'users'
-        ];
-        return view('backend/pages/users' , $data);
-    }
-
-    public function getUsers(){
-        // $userTable = new User();
-        // $user = $userTable->findAll();
-        // log_message('error', json_encode($user));
-        // return $user;
-        //DB Details
-        $dbDetails = array(
-            'host'=>$this->db->hostname,
-            'user'=>$this->db->username,
-            'pass'=>$this->db->password,
-            'db'=>$this->db->database,
-        );
-        $table = "users";
-        $primaryKey = "id";
-        $columns = array(
-            array(
-                "db"=>"id",
-                "dt"=>0
-            ),
-            array(
-                "db"=>"user_id",
-                "dt"=>1,
-            ),
-            array(
-                "db"=>"username",
-                "dt"=>2,
-            ),
-            array(
-                'db'=>"email",
-                'dt'=>3,
-            ),
-            array(
-                'db'=>"bio",
-                'dt'=>4,
-            ),
-            array(
-                'db'=>"block",
-                'dt'=>5,
-            ),
-            array(
-                'db'=>"created_at",
-                'dt'=>6,
-            ),
-            array(
-                'db'=>"update_at",
-                'dt'=>7,
-            ),
-            array(
-                'db'=>"id",
-                'dt'=>8,
-                'formatter'=>function($d,$row){
-                    return "<div class='btn-group'>
-                        <button class='btn btn-sm btn-danger editUserBtn' data-id='".$row['id']."'>제한</button>
-                    </div>
-                    <div class='btn-group'>
-                        <button class='btn btn-sm btn-info  editUserPasswordBtn' data-id='".$row['id']."' data-email='".trim($row['email'])."'>비밀번호</button>
-                    </div>";
-                }
-            ),
-        );
-        return json_encode(
-            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
-        );
-    }
-
-    public function getUser(){
-        $request = \Config\Services::request();
-        if($request->isAJAX()){
-            $id = $request->getVar('category_id');
-            $user = new User();
-            $user_date = $user->find($id);
-            return $this->response->setJSON(['data'=>$user_date]);
-        }
-    }
-
 
     public function addCategory(){
         $request = \Config\Services::request();
@@ -739,6 +491,360 @@ class AdminController extends BaseController
             return $this->response->setJSON(['data'=>$category_date]);
         }
     }
+
+    // 6. 어드민 페이지
+    public function adminUser(){
+        $data = [
+            'pageTitle' => 'Admin User'
+        ];
+        return view('backend/pages/admin-user' , $data);
+    }
+
+    // 6-1. 어드민 테이블 가져오기
+    public function getAdminUsers(){
+        $dbDetails = array(
+            'host'=>$this->db->hostname,
+            'user'=>$this->db->username,
+            'pass'=>$this->db->password,
+            'db'=>$this->db->database,
+        );
+        $table = "admin_user";
+        $primaryKey = "id";
+        $columns = array(
+            array(
+                "db"=>"id",
+                "dt"=>0
+            ),
+            array(
+                "db"=>"admin_id",
+                "dt"=>1,
+            ),
+            array(
+                "db"=>"username",
+                "dt"=>2,
+            ),
+            array(
+                'db'=>"email",
+                'dt'=>3,
+            ),
+            array(
+                'db'=>"created_at",
+                'dt'=>4,
+            ),
+            array(
+                'db'=>"update_at",
+                'dt'=>5,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>6,
+                'formatter'=>function($d,$row){
+                    return "<div class='btn-group'>
+                        <button class='btn btn-sm btn-link p-0 mx-1 editAdminBtn' data-id='".$row['id']."'>Edit</button>
+                    </div>";
+                }
+            ),
+        );
+        $where = "grade = 1";
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns, null , $where)
+        );
+    }
+
+    # 6-2. 어드민 정보 가져오기
+    public function getAdminUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $id = $request->getVar('category_id');
+            $user = new AdminUser();
+            $user_date = $user->find($id);
+            return $this->response->setJSON(['data'=>$user_date]);
+        }
+    }
+
+    # 6-3. 어드민 추가
+    public function addAdminUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $validation = \Config\Services::validation();
+
+            $this->validate([
+                'admin_id'=>[
+                    'rules'=>'required|is_unique[admin_user.admin_id]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+                'username'=>[
+                    'rules'=>'required',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                    ]
+                ],
+                'email'=>[
+                    'rules'=>'required|is_unique[admin_user.email]',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                        'is_unique' => 'Category name is aleady exists'
+                    ]
+                ],
+                'password'=>[
+                    'rules'=>'required',
+                    'errors'=>[
+                        'required' => 'Category name is required',
+                    ]
+                ],
+            ]);
+            if($validation->run()=== FALSE){
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'error'=>$errors,'test'=>$request->getVar('category_name')]);
+            }else{
+                $adminUser = new AdminUser;
+                $save = $adminUser->save([
+                    'admin_id'=> $request->getVar('admin_id'),
+                    'username'=> $request->getVar('username'),
+                    'email'=> $request->getVar('email'),
+                    'password'=> password_hash($request->getVar('password') , PASSWORD_BCRYPT),
+                ]);
+
+                if($save){
+                    return $this->response->setJSON(['status'=>1, 'token'=>csrf_hash(), 'msg'=>'New Admin has been successfully added.']);
+                }else{
+                    return $this->response->setJSON(['status'=>0, 'token'=>csrf_hash(), 'msg'=>'Something went wrong.']);
+                }
+            }
+        }
+
+    }
+
+    # 6-4. 어드민 패스워드 변경
+    public function changeAdminPassword(){
+        $request = \Config\Services::request();
+ 
+        if( $request->isAJAX() ){
+            $validation = \Config\Services::validation();
+            // $user_id = CIAuth::id();
+            // $user_info = $user->asObject()->where('id', $user_id)->first();
+            $user = new AdminUser();
+            $admin_srl = $request->getVar('category_id');
+            $this->validate([
+                'current_password' =>[
+                    'rules' => 'required|min_length[5]|check_admin_current_password[category_id, current_password]',
+                    'errors' => [
+                        'required' => 'Enter current password',
+                        'min_length' => 'Password must have atleast 5 charaters',
+                        'check_admin_current_password' => 'The current password is incorrect',
+                    ],
+                ],
+                'new_password'=>[
+                    'rules' => 'required|min_length[5]|max_length[20]|is_password_strong[new_password]',
+                    'errors' => [
+                        'required' => 'New password is required',
+                        'min_length' => 'New password must have atleast 5 characters',
+                        'max_length' => 'New password must not excess more than 20 characters',
+                        'is_password_strong' =>'Password must contains atleast 1 upppercase, 1 lowercase, 1 number and 1 special character',
+                    ],
+                ],
+                'confirm_new_password'=>[
+                    'rules' => 'required|matches[new_password]',
+                    'errors' => [
+                        'required' => 'Confirm new pasword',
+                        'matches'=> 'Password mismatch',
+                    ],
+                ],
+            ]);
+            if($validation->run() === FALSE){
+                $errors = $validation->getErrors();
+                return $this->response->setJSON(['status' =>0, 'token'=> csrf_hash(), 'error'=>$errors]);
+            }else{
+                //Update user(admin) password in DB
+                $user->where('id', $admin_srl)->set(['password' => Hash::make($request->getVar('new_password') )])->update();
+                
+                //Send Email notification to user(admin) email address
+                // 메일 발송
+                // $mail_data = array(
+                //     'user' => $user_info,
+                //     'new_password' => $request->getVar('new_password'),
+                // );
+
+                // $view = \Config\Services::renderer();
+                // $mail_body = $view->setVar('mail_data',$mail_data)->render('email-templates/password-changed-email-template');
+
+                // $mailConfig = array(
+                //     'mail_from_email' =>env('EMAIL_FROM_ADDRESS'),
+                //     'mail_from_name'    =>env('EMAIL_FROM_NAME'),
+                //     'mail_recipient_email'  => $user_info->email,
+                //     'mail_recipient_name'   => $user_info->name,
+                //     'mail_subject'          => 'Password Changed',
+                //     'mail_body'             => $mail_body,
+                // );
+
+                // sendEmail($mailConfig);
+
+                return $this->response->setJSON(['status'=>1 ,'token'=>csrf_hash(),'msg'=>'Done! Your password has been successfully updated']);
+            }
+        }
+    }
+
+    // 출금관리 페이지
+    public function withdraw(){
+        $data = [
+            'pageTitle' => 'Withdraw'
+        ];
+        return view('backend/pages/withdraw' , $data);
+    }
+
+    //출금 데이터 가져오기
+    public function getAllWithdraw($coin_name){
+        // $userTable = new User();
+        // $user = $userTable->findAll();
+        // log_message('error', json_encode($user));
+        // return $user;
+        //DB Details
+
+        $dbDetails = array(
+            'host'=>$this->db->hostname,
+            'user'=>$this->db->username,
+            'pass'=>$this->db->password,
+            'db'=>$this->db->database,
+        );
+        $table = strtoupper($coin_name)."_history";
+        $primaryKey = "id";
+        $columns = array(
+            array(
+                "db"=>"id",
+                "dt"=>0
+            ),
+            array(
+                "db"=>"user_srl",
+                "dt"=>1,
+            ),
+            array(
+                "db"=>"user_id",
+                "dt"=>2,
+            ),
+            array(
+                'db'=>"from_address",
+                'dt'=>3,
+            ),
+            array(
+                'db'=>"to_address",
+                'dt'=>4,
+            ),
+            array(
+                'db'=>"amount",
+                'dt'=>5,
+            ),
+            array(
+                'db'=>"usedFee",
+                'dt'=>6,
+            ),
+            array(
+                'db'=>"status",
+                'dt'=>7,
+                // 'formatter'=>function($d,$row){
+                //     return "<div class='btn-group'>
+                //         <button class='btn btn-sm btn-danger editUserBtn' data-id='".$row['id']."'>제한</button>
+                //     </div>
+                //   ";
+                // }
+            ),
+            array(
+                'db'=>'create_at',
+                'dt'=>8,
+            ),
+        );
+        $where = "type = 'withdraw'";
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns, null , $where)
+        );
+    }
+
+
+    public function users(){
+        $data = [
+            'pageTitle' => 'users'
+        ];
+        return view('backend/pages/users' , $data);
+    }
+
+    public function getUsers(){
+        // $userTable = new User();
+        // $user = $userTable->findAll();
+        // log_message('error', json_encode($user));
+        // return $user;
+        //DB Details
+        $dbDetails = array(
+            'host'=>$this->db->hostname,
+            'user'=>$this->db->username,
+            'pass'=>$this->db->password,
+            'db'=>$this->db->database,
+        );
+        $table = "users";
+        $primaryKey = "id";
+        $columns = array(
+            array(
+                "db"=>"id",
+                "dt"=>0
+            ),
+            array(
+                "db"=>"user_id",
+                "dt"=>1,
+            ),
+            array(
+                "db"=>"username",
+                "dt"=>2,
+            ),
+            array(
+                'db'=>"email",
+                'dt'=>3,
+            ),
+            array(
+                'db'=>"bio",
+                'dt'=>4,
+            ),
+            array(
+                'db'=>"block",
+                'dt'=>5,
+            ),
+            array(
+                'db'=>"created_at",
+                'dt'=>6,
+            ),
+            array(
+                'db'=>"update_at",
+                'dt'=>7,
+            ),
+            array(
+                'db'=>"id",
+                'dt'=>8,
+                'formatter'=>function($d,$row){
+                    return "<div class='btn-group'>
+                        <button class='btn btn-sm btn-danger editUserBtn' data-id='".$row['id']."'>제한</button>
+                    </div>
+                    <div class='btn-group'>
+                        <button class='btn btn-sm btn-info  editUserPasswordBtn' data-id='".$row['id']."' data-email='".trim($row['email'])."'>비밀번호</button>
+                    </div>";
+                }
+            ),
+        );
+        return json_encode(
+            SSP::simple($_GET, $dbDetails, $table, $primaryKey, $columns)
+        );
+    }
+
+    public function getUser(){
+        $request = \Config\Services::request();
+        if($request->isAJAX()){
+            $id = $request->getVar('category_id');
+            $user = new User();
+            $user_date = $user->find($id);
+            return $this->response->setJSON(['data'=>$user_date]);
+        }
+    }
+
+
     
     public function updateUser(){
         $request = \Config\Services::request();

@@ -34,7 +34,7 @@ if(!function_exists('get_settings') ){
         $settings_data = $settings->asObject()->first();
         if(!$settings_data){
             $data = array(
-                'blog_title'=> 'ExcelVirtuous',
+                'blog_title'=> 'StartArt',
                 'blog_email'=> 'info@email.com',
                 'blog_phone'=> null,
                 'blog_meta_keywords'=>null,

@@ -4,7 +4,7 @@
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>ExcelVirtuous</title>
+		<title>StartArt</title>
 
 		<!-- Site favicon -->
 		<link
@@ -86,7 +86,8 @@
 			>
 				<div class="brand-logo">
 					<a href="<?= route_to('admin.login.form') ?>">
-						<img src="/backend/vendors/images/logo_transparent.png" alt="" />
+						<!-- <span style="color:black;">StartArt</span> -->
+						<img src="/backend/vendors/images/STARTART_LOGO.png" alt="" />
 						<!-- <span style="color:black"> ExcelVirtuous</span> -->
 					</a>
 				</div>
@@ -112,7 +113,7 @@
 			</div>
 		</div>
 		<!-- welcome modal start -->
-		<div class="welcome-modal">
+		<!-- <div class="welcome-modal">
 			<button class="welcome-modal-close">
 				<i class="bi bi-x-lg"></i>
 			</button>
@@ -180,10 +181,10 @@
 			<div class="d-none d-md-flex justify-content-center h1 mb-0 text-danger">
 				<i class="fa fa-html5"></i>
 			</div>
-		</div>
-		<button class="welcome-modal-btn">
+		</div> -->
+		<!-- <button class="welcome-modal-btn">
 			<i class="fa fa-download"></i> Download
-		</button>
+		</button> -->
 		<!-- welcome modal end -->
 		<!-- js -->
 		<script src="/backend/vendors/scripts/core.js"></script>
@@ -191,14 +192,14 @@
 		<script src="/backend/vendors/scripts/process.js"></script>
 		<script src="/backend/vendors/scripts/layout-settings.js"></script>
 		<!-- Google Tag Manager (noscript) -->
-		<noscript
+		<!-- <noscript
 			><iframe
 				src="https://www.googletagmanager.com/ns.html?id=GTM-NXZMQSS"
 				height="0"
 				width="0"
 				style="display: none; visibility: hidden"
 			></iframe
-		></noscript>
+		></noscript> -->
 		<!-- End Google Tag Manager (noscript) -->
 	</body>
 </html>

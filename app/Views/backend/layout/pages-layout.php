@@ -5,7 +5,7 @@
 	<!-- Basic Page Info -->
 	<meta charset="utf-8" />
 	<title>
-		<?= isset($pageTitle) ? "ExcelVirtuous -". $pageTitle : 'ExcelVirtuous' ?>
+		<?= isset($pageTitle) ? "StartArt -". $pageTitle : 'StartArt' ?>
 		
 	</title>
 

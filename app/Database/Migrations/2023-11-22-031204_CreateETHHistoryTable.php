@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateTRONHistoryTable extends Migration
+class CreateETHHistoryTable extends Migration
 {
     public function up()
     {
@@ -76,11 +76,11 @@ class CreateTRONHistoryTable extends Migration
         ]);
 
         $this->forge->addKey('id', true); // Primary Key
-        $this->forge->createTable('TRON_history', true); // Table creation
+        $this->forge->createTable('ETH_history', true); // Table creation
     }
 
     public function down() 
     {
-        $this->forge->dropTable('TRON_history', true);
+        $this->forge->dropTable('ETH_history', true);
     }
 }

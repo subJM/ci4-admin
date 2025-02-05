@@ -24,7 +24,7 @@
     </div>
 </div>
 
-<form action="<?= route_to('create-post')?>" method="POST" autocomplete="off" enctype="multipart/form-data" id="addPostForm" >
+<form action="<?= route_to('create-notice')?>" method="POST" autocomplete="off" enctype="multipart/form-data" id="addPostForm" >
     <input type="hidden" name="<?= csrf_token() ?>" value="<?=csrf_hash() ?>" class="ci_csrf_data" >
     <div class="row">
         <div class="col-md-9">
@@ -59,7 +59,7 @@
         <div class="col-md-3">
             <div class="card card-box mb-2">
                 <div class="card-body">
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for=""><b>Post category</b></label>
                         <select name="category" id="" class="custom-select formcontrol">
                             <option value="">Choose...</option>
@@ -68,7 +68,7 @@
                             <?php endforeach?>
                         </select>
                         <span class="text-danger error-text category_error"></span>
-                    </div>
+                    </div> -->
                     <div class="form-group">
                         <label for=""><b>Post featured image</b></label>
                         <input type="file" name="featured_image" class="form-control-file form-control" height="auto">

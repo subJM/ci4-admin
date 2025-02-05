@@ -53,6 +53,11 @@ $routes->group('admin', static function (RouteCollection $routes) {
     $routes->get('reorder-subcategories', 'AdminController::reorderSubCategories', ['as'=>'reorder-subcategories']);
     $routes->get('delete-subcategory', 'AdminController::deleteSubCategory', ['as'=> 'delete-subcategory']);
 
+    // 출금 관리 테이블
+    $routes->get('withdraw', 'AdminController::withdraw', ['as'=> 'withdraw']);
+    $routes->get('get-all-withdraw/(:any)', 'AdminController::getAllWithdraw/$1', ['as'=> 'get-all-withdraw']);
+    $routes->get('get-withdraw', 'AdminController::getWithdraw', ['as'=> 'get-withdraw']);
+
     $routes->group('posts', static function($routes){
       $routes->get('new-post', 'AdminController::addPost', ['as'=>'new-post']);
       $routes->post('create-post', 'AdminController::createPost', ['as'=>'create-post']);

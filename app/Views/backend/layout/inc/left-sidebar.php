@@ -31,6 +31,11 @@
 						<span class="micon dw dw-list"></span><span class="mtext">User</span>
 					</a>
 				</li>
+				<li>
+					<a href="<?= route_to('withdraw') ?>" class="dropdown-toggle no-arrow <?= current_route_name() == 'withdraw' ? 'active' : '' ?>">
+						<span class="micon dw dw-list"></span><span class="mtext">Withdraw</span>
+					</a>
+				</li>
 
 				<li class="dropdown posts-menu">
 					<a href="javascript:;" class="dropdown-toggle <?= current_route_name() == 'all-notice' || current_route_name() == 'new-notice' ? 'active' : '' ?>">
